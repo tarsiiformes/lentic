@@ -191,17 +191,17 @@ of mode in the current buffer.")
   "Configuration object for lentic, which defines the mechanism
 by which linking happens.")
 
-(defgeneric lentic-create (conf))
-(defgeneric lentic-convert (conf location))
-(defgeneric lentic-invert (conf that-buffer))
+(cl-defgeneric lentic-create (conf))
+(cl-defgeneric lentic-convert (conf location))
+(cl-defgeneric lentic-invert (conf that-buffer))
 
-(defmethod lentic-this ((conf lentic-configuration))
+(cl-defmethod lentic-this ((conf lentic-configuration))
   (oref conf :this-buffer))
 
-(defmethod lentic-that ((conf lentic-configuration))
+(cl-defmethod lentic-that ((conf lentic-configuration))
   (oref conf :that-buffer))
 
-(defmethod lentic-ensure-that ((conf lentic-configuration))
+(cl-defmethod lentic-ensure-that ((conf lentic-configuration))
   "Get the lentic for this configuration
 or create it if it does not exist."
   (or (lentic-that conf)
@@ -232,7 +232,7 @@ This function is not meant to do anything. It's useful to
 advice."
   string)
 
-(defmethod lentic-create ((conf lentic-default-configuration))
+(cl-defmethod lentic-create ((conf lentic-default-configuration))
   "Create the lentic for this configuration.
 Given a `lentic-configuration' object, create the lentic
 appropriate for that configurationuration. It is the callers
@@ -266,19 +266,19 @@ created."
             (lentic-invert conf)))
     that-buffer))
 
-(defmethod lentic-invert ((conf lentic-default-configuration))
+(cl-defmethod lentic-invert ((conf lentic-default-configuration))
   (lentic-default-configuration
    (lentic-config-name (lentic-that conf))
    :this-buffer (oref conf :that-buffer)
    :that-buffer (oref conf :this-buffer)))
 
-(defmethod lentic-convert ((conf lentic-default-configuration)
+(cl-defmethod lentic-convert ((conf lentic-default-configuration)
                                   location)
   "For this configuration, convert LOCATION to an equivalent location in
 the lentic."
   location)
 
-(defmethod lentic-clone ((conf lentic-configuration)
+(cl-defmethod lentic-clone ((conf lentic-configuration)
                                 &optional start stop _length-before
                                 start-converted stop-converted)
   "Updates that-buffer to reflect the contents in this-buffer.

@@ -278,7 +278,7 @@ into
    ";;; \\1:\\2"))
 
 
-(defmethod lentic-clone
+(cl-defmethod lentic-clone
   ((conf lentic-org-to-orgel-configuration)
    &optional start stop length-before
    start-converted stop-converted)
@@ -333,8 +333,8 @@ into
                stop-converted)
             stop-converted))
          (clone-return
-          (call-next-method conf start stop length-before
-                            start-converted stop-converted))
+          (cl-call-next-method conf start stop length-before
+                               start-converted stop-converted))
          (first-line-end-match
           (cl-cadar
            (m-buffer-match-first-line
@@ -348,10 +348,10 @@ into
           nil
         clone-return))))
 
-(defmethod lentic-convert
+(cl-defmethod lentic-convert
   ((conf lentic-org-to-orgel-configuration)
    location)
-  (let ((converted (call-next-method conf location)))
+  (let ((converted (cl-call-next-method conf location)))
     (m-buffer-with-current-position
         (oref conf :this-buffer)
         location
@@ -373,7 +373,7 @@ into
             converted))
         converted))))
 
-(defmethod lentic-invert
+(cl-defmethod lentic-invert
   ((conf lentic-org-to-orgel-configuration))
   (lentic-m-oset
    (lentic-orgel-org-init)
@@ -438,21 +438,21 @@ into
   (lentic-unmatched-chunk-configuration lentic-commented-chunk-configuration)
   ())
 
-(defmethod lentic-create
+(cl-defmethod lentic-create
   ((conf lentic-orgel-to-org-configuration))
   (let ((buf
-         (call-next-method conf)))
+         (cl-call-next-method conf)))
     (with-current-buffer
         buf
       (run-hook-with-args 'lentic-orgel-org-init-hook conf))
     buf))
 
-(defmethod lentic-clone
+(cl-defmethod lentic-clone
   ((conf lentic-orgel-to-org-configuration)
    &optional start stop length-before start-converted stop-converted)
   ;; do everything else to the buffer
   (let* ((clone-return
-          (call-next-method conf start stop length-before
+          (cl-call-next-method conf start stop length-before
                             start-converted stop-converted))
          (m1
           (m-buffer-replace-match
@@ -483,13 +483,13 @@ into
       ;; return nil
       clone-return)))
 
-(defmethod lentic-convert
+(cl-defmethod lentic-convert
   ((conf lentic-orgel-to-org-configuration)
    location)
   ;; if we are a header one and we are *after* the first :, then just call
   ;; next-method.
   (let* ((cnm
-         (call-next-method conf location))
+         (cl-call-next-method conf location))
         (line-start-that
          (m-buffer-at-line-beginning-position
           (oref conf :that-buffer) cnm))
@@ -521,7 +521,7 @@ into
             (+ cnm 1))))
       cnm)))
 
-(defmethod lentic-invert
+(cl-defmethod lentic-invert
   ((conf lentic-orgel-to-org-configuration))
   (lentic-m-oset
    (lentic-org-orgel-init)

@@ -160,20 +160,20 @@ This should remove other \"....\" matches.
        (-map 'cadr source-start)
        (-map 'car source-end)))))
 
-(defmethod lentic-chunk-match
+(cl-defmethod lentic-chunk-match
   ((conf lentic-commented-asciidoc-configuration) buffer)
   (lentic-chunk-match-asciidoc conf buffer))
 
-(defmethod lentic-chunk-match
+(cl-defmethod lentic-chunk-match
   ((conf lentic-uncommented-asciidoc-configuration) buffer)
   (lentic-chunk-match-asciidoc conf buffer))
 
-(defmethod lentic-invert
+(cl-defmethod lentic-invert
   ((conf lentic-commented-asciidoc-configuration))
   (lentic-m-oset (lentic-asciidoc-uncommented-new)
                  :that-buffer (lentic-this conf)))
 
-(defmethod lentic-invert
+(cl-defmethod lentic-invert
   ((conf lentic-uncommented-asciidoc-configuration))
   (lentic-m-oset (lentic-asciidoc-commented-new)
                  :that-buffer (lentic-this conf)))

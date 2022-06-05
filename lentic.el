@@ -186,7 +186,7 @@ This should be one or a list of functions that each return a
 
 ;; The `lentic-config' variable stores all of the configuration objects for each
 ;; lentic-buffer of this-buffer. Each lentic-buffer should have one configuration
-;; object and is this configuration object that controls the behaviour and
+;; object and it is this configuration object that controls the behaviour and
 ;; updating of that lentic. As lentics are bi-directional, the `lentic-config'
 ;; variable should be -- for each lentic-configuration object in this-buffer
 ;; pointing to that-buffer there should be one in that-buffer pointing to
@@ -231,7 +231,7 @@ resilient to changes of mode in the current buffer.")
     :initarg :this-buffer
     :documentation
     "The this-buffer for this configuration. This should be the
-    current-buffer when this configuration is present in `lentic-config'." )
+current-buffer when this configuration is present in `lentic-config'." )
    (that-buffer
     :initarg :that-buffer
     :documentation
@@ -297,14 +297,14 @@ resilient to changes of mode in the current buffer.")
 ;; to put the documentation.
 
 ;; #+begin_src emacs-lisp
-(defgeneric lentic-create (conf)
+(cl-defgeneric lentic-create (conf)
   "Create the lentic for this configuration.
 Given a `lentic-configuration' object, create the lentic
-appropriate for that configurationuration. It is the callers
+appropriate for that configuration. It is the callers
 responsibility to check that buffer has not already been
 created.")
 
-(defgeneric lentic-convert (conf location)
+(cl-defgeneric lentic-convert (conf location)
   "Convert LOCATION in this-buffer to an equivalent location in
 that-buffer. LOCATION is a numeric location, rather than a
 marker. By equivalent, we mean the same semantic location as
@@ -312,7 +312,7 @@ determined by the transformation between the buffers. It is
 possible that a given LOCATION could map to more than one
 location in the lentic buffer.")
 
-(defgeneric lentic-clone (conf)
+(cl-defgeneric lentic-clone (conf)
   "Updates that-buffer to reflect the contents in this-buffer.
 
 Updates at least the region that has been given between start and
@@ -335,7 +335,7 @@ STOP-CONVERTED. Otherwise, this should return nil.")
 ;; which is normal when the lentic transformation is asymmetrical.
 
 ;; #+begin_src emacs-lisp
-(defgeneric lentic-invert (conf)
+(cl-defgeneric lentic-invert (conf)
   "Return a new configuration object for the lentic buffer.
 This method is called at the time that the lentic is created. It
 is the callers responsibility to ensure that this is only called
@@ -355,8 +355,8 @@ buffer.")
 ;; as many can be created as required.
 
 ;; #+begin_src emacs-lisp
-(defgeneric lentic-coexist? (this-conf that-conf)
-  "Return non-nil if THIS-CONF and co-exist with THAT-CONF.
+(cl-defgeneric lentic-coexist? (this-conf that-conf)
+  "Return non-nil if THIS-CONF can co-exist with THAT-CONF.
 By co-exist this means that both configurations are valid for a
 given buffer at the same time. A nil return indicates that there
 should only be one of these two for a given buffer.")
@@ -367,20 +367,20 @@ should only be one of these two for a given buffer.")
 ;; since been deleted anyway.
 
 ;; #+begin_src emacs-lisp
-(defmethod lentic-this ((conf lentic-configuration))
+(cl-defmethod lentic-this ((conf lentic-configuration))
   "Returns this-buffer for this configuration object.
 In most cases, this is likely to be the `current-buffer' but
 this should not be relied on."
   (oref conf :this-buffer))
 
-(defmethod lentic-that ((conf lentic-configuration))
+(cl-defmethod lentic-that ((conf lentic-configuration))
   "Returns the that-buffer for this configuration object.
 This may return nil if there is not that-buffer, probably because
 it has not been created."
   (and (slot-boundp conf :that-buffer)
        (oref conf :that-buffer)))
 
-(defmethod lentic-ensure-that ((conf lentic-configuration))
+(cl-defmethod lentic-ensure-that ((conf lentic-configuration))
   "Get the lentic for this configuration
 or create it if it does not exist."
   (or (lentic-that conf)
@@ -398,7 +398,7 @@ or create it if it does not exist."
 ;; of status keyword return value.
 
 ;; #+begin_src emacs-lisp
-(defmethod lentic-mode-line-string ((conf lentic-configuration))
+(cl-defmethod lentic-mode-line-string ((conf lentic-configuration))
   "Returns a mode-line string for this configuration object."
   (when (slot-boundp conf :that-buffer)
     (let ((that (oref conf :that-buffer)))
@@ -450,8 +450,8 @@ advice."
 ;; The default methods should be self-explanatory!
 
 ;; #+begin_src emacs-lisp
-(defmethod lentic-create ((conf lentic-default-configuration))
-  "Create an new lentic buffer. This creates the new buffer sets
+(cl-defmethod lentic-create ((conf lentic-default-configuration))
+  "Create an new lentic buffer. This creates the new buffer and sets
 the mode to the same as the main buffer or which ever is
 specified in the configuration. The current contents of the main
 buffer are copied."
@@ -492,7 +492,7 @@ buffer are copied."
             (list (lentic-invert conf))))
     that-buffer))
 
-(defmethod lentic-coexist? ((this-conf lentic-default-configuration)
+(cl-defmethod lentic-coexist? ((this-conf lentic-default-configuration)
                             that-conf)
   "By default, we can have multiple lentic buffers with the same
 configuration, unless specifically disallowed, or unless it has
@@ -506,7 +506,7 @@ to break!)."
          (f-equal? (oref this-conf :lentic-file)
                    (oref that-conf :lentic-file))))))
 
-(defmethod lentic-invert ((conf lentic-default-configuration))
+(cl-defmethod lentic-invert ((conf lentic-default-configuration))
   "By default, return a clone of the existing object, but switch
 the this and that buffers around. "
   (clone
@@ -515,13 +515,13 @@ the this and that buffers around. "
    :that-buffer (lentic-this conf)
    :sync-point (oref conf :sync-point)))
 
-(defmethod lentic-convert ((conf lentic-default-configuration)
+(cl-defmethod lentic-convert ((conf lentic-default-configuration)
                            location)
   "The two buffers should be identical, so we just return the
   same location."
   location)
 
-(defmethod lentic-clone ((conf lentic-configuration)
+(cl-defmethod lentic-clone ((conf lentic-configuration)
                                 &optional start stop _length-before
                                 start-converted stop-converted)
   "The default clone method cuts out the before region and pastes

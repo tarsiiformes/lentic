@@ -69,11 +69,11 @@
 ;; =lentic-clone= will probably return the changed region directly.
 
 ;; #+begin_src emacs-lisp
-(defmethod lentic-clone ((conf lentic-rot13-configuration)
+(cl-defmethod lentic-clone ((conf lentic-rot13-configuration)
                          &optional start stop _length-before
                          start-converted stop-converted)
-  (call-next-method conf start stop _length-before
-                    start-converted stop-converted)
+  (cl-call-next-method conf start stop _length-before
+                       start-converted stop-converted)
   ;; and rot13 it!
   (with-current-buffer
       (lentic-that conf)
@@ -95,7 +95,7 @@
 ;; /that/ to /this/ uses an object of the same class as from /this/ to /that/.
 
 ;; #+begin_src emacs-lisp
-(defmethod lentic-invert ((conf lentic-rot13-configuration))
+(cl-defmethod lentic-invert ((conf lentic-rot13-configuration))
   (lentic-rot13-configuration
    "rot13-config"
    :this-buffer (lentic-that conf)
